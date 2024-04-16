@@ -22,6 +22,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	win = WinApp::GetInstance();
 	win->CreateGameWindow(L"GC2C_02_カナイ_ショウタ_AL3");
 
+	//
+	///1-1テスト　ブランチ作成
+	//
+
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win);
