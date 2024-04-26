@@ -48,4 +48,16 @@ private: // メンバ変数
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>
+	
+	//テクスチャ
+	//uint32_t textureHandle_=0;
+	//Sprite* sprite_=nullptr;
+
+	//3Dテクスチャ
+	uint32_t textureHandle3D_=0;
+	Model* model_=nullptr;
+	//ワールドトランスフォーム
+	WorldTransform worldTransform_;
+	//ビュープロジェクション
+	ViewProjection viewProjection_;
 };
