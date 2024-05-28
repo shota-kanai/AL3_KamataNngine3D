@@ -1,13 +1,13 @@
 #include"Model.h"
+#include "ViewProjection.h"
 #include"WorldTransform.h"
 
 class Player{
-
 public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model,uint32_t textureHandle);
+	void Initialize(Model* model,uint32_t textureHandle,ViewProjection* viewProjection);
 	/// <summary>
 	/// 更新
 	/// </summary>
@@ -24,4 +24,6 @@ private:
 	Model* model_=nullptr;
 	//テクスチャハンドル
 	uint32_t textureHandle_=0u;
+	//ビュー
+	ViewProjection* viewProjection_ = nullptr;
 };
