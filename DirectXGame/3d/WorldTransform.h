@@ -14,8 +14,11 @@ struct ConstBufferDataWorldTransform {
 /// <summary>
 /// ワールド変換データ
 /// </summary>
+
 class WorldTransform {
 public:
+
+	
 	// ローカルスケール
 	Vector3 scale_ = {1, 1, 1};
 	// X,Y,Z軸回りのローカル回転角
@@ -45,6 +48,7 @@ public:
 	/// <summary>
 	/// 行列を転送する
 	/// </summary>
+	void UpdateMatrix();
 	void TransferMatrix();
 	/// <summary>
 	/// 定数バッファの取得
