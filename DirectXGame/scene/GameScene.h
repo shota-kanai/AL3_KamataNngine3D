@@ -13,6 +13,7 @@
 #include"skydome.h"
 
 #include<vector>
+#include"MapChipField.h"
 
 
 
@@ -48,6 +49,11 @@ public: // メンバ関数
 	/// </summary>
 	void Draw();
 
+	/// <summary>
+	/// 表示ブロックの生成
+	/// </summary>
+	void GeneratBlocks();
+
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
@@ -78,5 +84,8 @@ private: // メンバ変数
 	Skydome* skydome_;
 	//スカイドームの3Dモデル
 	Model* modelSkydome_=nullptr;
+
+	//マップチップフィールド
+	MapChipField* mapChipField_;
 
 };
