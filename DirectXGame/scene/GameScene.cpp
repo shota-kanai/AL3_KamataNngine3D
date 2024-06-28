@@ -40,11 +40,7 @@ void GameScene::Initialize() {
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
-	//自キャラの生成
-	player_=new Player();
-	//自キャラの初期化
-	player_->Initialize(model_,textureHandle_,&viewProjection_);
-
+	
 
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280,720);
@@ -60,6 +56,12 @@ void GameScene::Initialize() {
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 
 	GeneratBlocks();
+	Vector3 playerPosition=mapChipField_->GetMapChipPosisionByIndex(1,18);
+	//自キャラの生成
+	player_=new Player();
+	//自キャラの初期化
+	player_->Initialize(model_,&viewProjection_/*,playerPosition*/);
+
 }
 
 void GameScene::Update() {
