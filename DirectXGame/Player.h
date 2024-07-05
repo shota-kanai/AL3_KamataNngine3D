@@ -18,6 +18,9 @@ public:
 	/// </summary>
 	void Draw();
 	
+	//ゲッター(かめらのやつ)
+	const WorldTransform& GetWorldTransform() const {return worldTransform_;}
+	const Vector3& GetVelocity() const{return velocity_;}
 
 private:
 	//ワールド変換データ
@@ -57,4 +60,7 @@ private:
 	//慣性移動
 	static inline const float kAcceleration=0.01f;
 	bool landing;
+	//カメラコントロール
+	CameraController* cameraController=nullptr;
+	
 };

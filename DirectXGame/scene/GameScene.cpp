@@ -1,7 +1,10 @@
+#include <cassert>
 #include "GameScene.h"
 #include "TextureManager.h"
 #include"myMath.h"
-#include <cassert>
+#include"CameraController.h"
+#include <CameraController.cpp>
+
 
 GameScene::GameScene() {}
 
@@ -62,6 +65,15 @@ void GameScene::Initialize() {
 	//自キャラの初期化
 	player_->Initialize(model_,&viewProjection_/*,playerPosition*/);
 
+
+	//カメラコントローラーの初期化
+	cameraController = new CameraController;
+	cameraController->Initialize();
+	cameraController->SetTarget(player_);
+	cameraController->Reset();
+
+	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
+	cameraController->SetMovableArea(cameraArea);
 }
 
 void GameScene::Update() {
@@ -73,7 +85,7 @@ void GameScene::Update() {
 			isDebugCameraActive_ = true;
 	}
 #endif
-
+	cameraController->Update();
 	// カメラ処理
 	if (isDebugCameraActive_) {
 		// デバッグカメラの更新

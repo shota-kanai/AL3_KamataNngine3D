@@ -14,6 +14,7 @@
 
 #include<vector>
 #include"MapChipField.h"
+#include"CameraController.h"
 
 
 
@@ -88,4 +89,5 @@ private: // メンバ変数
 	//マップチップフィールド
 	MapChipField* mapChipField_;
 
+	
 };
