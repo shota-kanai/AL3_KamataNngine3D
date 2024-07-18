@@ -1,4 +1,6 @@
 #include "CameraController.h"
+#include"MathUtilityForText.h"
+#include "Player.h"
 #include <algorithm>
 
 /// 初期化
@@ -22,8 +24,7 @@ void CameraController::Update() {
 	viewProjection_.translation_.z = Lerp(viewProjection_.translation_.z, destination_.z, kInterpolationRate_);
 
     // 追従対象が画面外に出ないように補正
-    viewProjection_.translation_.x =
-	    std::clamp(viewProjection_.translation_.x, targetWorldTransform.translation_.x + targetMargin.left, targetWorldTransform.translation_.x + targetMargin.right);
+    viewProjection_.translation_.x = std::clamp(viewProjection_.translation_.x, targetWorldTransform.translation_.x + targetMargin.left, targetWorldTransform.translation_.x + targetMargin.right);
 	
 	viewProjection_.translation_.y = std::clamp(viewProjection_.translation_.y, targetWorldTransform.translation_.y + targetMargin.bottom, targetWorldTransform.translation_.y + targetMargin.top);
 	// 移動範囲制限

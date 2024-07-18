@@ -4,24 +4,24 @@
 #include"cassert"
 #include"numbers"
 #include"Input.h"
-#include"algorithm"
+#include<algorithm>
 
 #include"MathUtilityForText.h"
 #include"Easing.h"
 
-void Player::Initialize(Model* model,ViewProjection* viewProjection/*,const Vector3& position*/) {
+void Player::Initialize(Model* model,ViewProjection* viewProjection,const Vector3& plyerPosition) {
 
 	//NULLポインタチェック
-	assert(model);
-
-	worldTransform_.Initialize();
-
+	//assert(model);
 	model_=model;
+	worldTransform_.Initialize();
 	//textureHandle_=textureHandle;
 	viewProjection_ = viewProjection;
 	worldTransform_.rotation_.y= std::numbers::pi_v<float>/2.0f;
-
+	worldTransform_.translation_=plyerPosition;
 }
+
+
 
 void Player::Update() {
 
@@ -154,6 +154,6 @@ void Player::Update() {
 
 void Player::Draw() {
 	// 3Dモデルを描画
-	model_->Draw(worldTransform_, *viewProjection_, textureHandle_);
+	model_->Draw(worldTransform_, *viewProjection_);
 }
 

@@ -53,7 +53,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 表示ブロックの生成
 	/// </summary>
-	void GeneratBlocks();
+	
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -68,6 +68,7 @@ private: // メンバ変数
 	//3Dモデルの生成
 	Model* model_=nullptr;
 	Model* modelBlock_ = nullptr;
+	Model* modelPlayer_ =nullptr;
 	//ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	//ビュープロジェクション
@@ -89,5 +90,6 @@ private: // メンバ変数
 	//マップチップフィールド
 	MapChipField* mapChipField_;
 
-	
+	CameraController*  cameraController=nullptr;
+	void GeneratBlocks();
 };

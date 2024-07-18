@@ -1,9 +1,7 @@
 #include <cassert>
+#include<cstdint>
 #include "GameScene.h"
 #include "TextureManager.h"
-#include"myMath.h"
-#include"CameraController.h"
-#include <CameraController.cpp>
 
 
 GameScene::GameScene() {}
@@ -11,18 +9,21 @@ GameScene::GameScene() {}
 GameScene::~GameScene() {
 	delete model_;
 	delete player_;
+	delete modelPlayer_;
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
+			worldTransformBlock=nullptr;
 		}
 	}
 	worldTransformBlocks_.clear();
 
 	delete debugCamera_;
-
 	delete modelSkydome_;
-
 	delete mapChipField_;
+	delete modelBlock_;
+	delete cameraController;
+
 }
 
 void GameScene::Initialize() {
@@ -33,11 +34,9 @@ void GameScene::Initialize() {
 
 	//ファイル名を指定してテクスチャを読み込む
 	textureHandle_=TextureManager::Load("mario.jpg");
-	// ファイル名を指定してテクスチャを読み込む
-//	textureHandle_ = TextureManager::Load("block.jpg");
 	//3Dモデルの生成
 	model_=Model::Create();
-	modelBlock_ = Model::Create();
+	modelBlock_ = Model::CreateFromOBJ("block");
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 	// ビュープロジェクションの初期化
@@ -59,12 +58,14 @@ void GameScene::Initialize() {
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 
 	GeneratBlocks();
-	Vector3 playerPosition=mapChipField_->GetMapChipPosisionByIndex(1,18);
-	//自キャラの生成
 	player_=new Player();
+	//自キャラの生成
+	Vector3 playerPosition=mapChipField_->GetMapChipPosisionByIndex(2,18);
 	//自キャラの初期化
-	player_->Initialize(model_,&viewProjection_/*,playerPosition*/);
+	modelPlayer_=Model::CreateFromOBJ("player",true);
+	player_->Initialize(modelPlayer_,&viewProjection_,playerPosition);
 
+	
 
 	//カメラコントローラーの初期化
 	cameraController = new CameraController;
@@ -72,7 +73,7 @@ void GameScene::Initialize() {
 	cameraController->SetTarget(player_);
 	cameraController->Reset();
 
-	CameraController::Rect cameraArea = {12.0f, 100 - 12.0f, 6.0f, 6.0f};
+	CameraController::Rect cameraArea = {14.0f, 100 - 12.0f, 7.6f, 7.6f};
 	cameraController->SetMovableArea(cameraArea);
 }
 
@@ -95,14 +96,18 @@ void GameScene::Update() {
 		// ビュープロジェクション行列の転送
 		viewProjection_.TransferMatrix();
 	} else {
+		viewProjection_.matView=cameraController->GetViewProjection().matView;
+		viewProjection_.matProjection=cameraController->GetViewProjection().matProjection;
 		// ビュープロジェクション行列の更新と転送
-		viewProjection_.UpdateMatrix();
+		viewProjection_.TransferMatrix();
 	}
 	//自キャラの更新
 	player_->Update();
+	//カメラの更新
+	cameraController->Update();
 	// 縦横ブロック更新
-	for (std::vector<WorldTransform*> worldTransformBlockTate : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlockYoko : worldTransformBlockTate) {
+	for (std::vector<WorldTransform*>& worldTransformBlockTate : worldTransformBlocks_) {
+		for (WorldTransform*& worldTransformBlockYoko : worldTransformBlockTate) {
 			if (!worldTransformBlockYoko)
 				continue;
 
@@ -145,8 +150,8 @@ void GameScene::Draw() {
 	//自キャラの描画
 	player_->Draw();
 	//縦横ブロック描画
-	for (std::vector<WorldTransform*> worldTransformBlockTate : worldTransformBlocks_) {
-		for (WorldTransform* worldTransformBlockYoko : worldTransformBlockTate) {
+	for (std::vector<WorldTransform*>& worldTransformBlockTate : worldTransformBlocks_) {
+		for (WorldTransform*& worldTransformBlockYoko : worldTransformBlockTate) {
 			if (!worldTransformBlockYoko)
 				continue;
 
@@ -181,8 +186,8 @@ void GameScene::GeneratBlocks()
 	uint32_t numBlockVirtical=mapChipField_->GetNumBlockVirtical();
 	uint32_t numBlockHorizontal=mapChipField_->GetNumBlockHorizontal();
 	//// ブロック1個分の横幅
-	//const float kBlockWidth = 2.0f;
-	//const float kBlockHeight = 2.0f;
+	/*const float kBlockWidth = 2.0f;
+	const float kBlockHeight = 2.0f;*/
 	
 	// 要素数を変更する
 	//列数を設定(縦方向のブロック数)
