@@ -23,7 +23,7 @@ GameScene::~GameScene() {
 	delete mapChipField_;
 	delete modelBlock_;
 	delete cameraController;
-
+	delete modelEnemy_;
 }
 
 void GameScene::Initialize() {
@@ -37,6 +37,9 @@ void GameScene::Initialize() {
 	//3Dモデルの生成
 	model_=Model::Create();
 	modelBlock_ = Model::CreateFromOBJ("block");
+	modelPlayer_=Model::CreateFromOBJ("player",true);
+	modelEnemy_ = Model::CreateFromOBJ("enemy");
+	modelSkydome_=Model::CreateFromOBJ("sphere",true);
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 	// ビュープロジェクションの初期化
@@ -46,8 +49,7 @@ void GameScene::Initialize() {
 	//スカイドームの初期化
 	skydome_=new Skydome();
 	skydome_->Initialize(model_,&viewProjection_);
-	//3Dモデルの生成
-	modelSkydome_=Model::CreateFromOBJ("sphere",true);
+
 	skydome_->Initialize(modelSkydome_,&viewProjection_);
 
 	// デバッグカメラの生成
@@ -62,7 +64,6 @@ void GameScene::Initialize() {
 	// 座標をマップチップ番号で指定
 	Vector3 playerPosition=mapChipField_->GetMapChipPositionByIndex(2,18);
 	//自キャラの初期化
-	modelPlayer_=Model::CreateFromOBJ("player",true);
 	player_->Initialize(modelPlayer_,&viewProjection_,playerPosition);
 
 	player_->SetMapChipField(mapChipField_);
@@ -77,7 +78,16 @@ void GameScene::Initialize() {
 
 	CameraController::Rect cameraArea = {14.0f, 100 - 12.0f, 7.6f, 7.6f};
 	cameraController->SetMovableArea(cameraArea);
+
+	//敵の生成
+	enemy_ = new Enemy();
+	
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(5,18);
+	//敵の初期化
+	enemy_->Initialize(modelEnemy_, enemyPosition, &viewProjection_);
+
 }
+
 void GameScene::GenerateBlocks() {
 
 	// 要素数
@@ -135,6 +145,8 @@ void GameScene::Update() {
 	cameraController->Update();
 	//スカイドームの更新
 	skydome_->Update();
+	//敵の更新
+	enemy_->Update();
 	// 縦横ブロック更新
 	for (std::vector<WorldTransform*>& worldTransformBlockTate : worldTransformBlocks_) {
 		for (WorldTransform*& worldTransformBlockYoko : worldTransformBlockTate) {
@@ -143,7 +155,8 @@ void GameScene::Update() {
 
 				// アフィン変換行列の作成
 				worldTransformBlockYoko->UpdateMatrix();
-		
+				// 定数バッファに転送
+				worldTransformBlockYoko->TransferMatrix();
 		}
 	}
 }
@@ -189,6 +202,9 @@ void GameScene::Draw() {
 	}
 	//スカイドームの描画
 	skydome_->Draw();
+
+	//敵の描画
+	enemy_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
