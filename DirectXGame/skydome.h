@@ -1,7 +1,7 @@
 #pragma once
 #include"Model.h"
 #include"WorldTransform.h"
-#include"viewProjection.h"
+#include"ViewProjection.h"
 
 
 class Skydome {

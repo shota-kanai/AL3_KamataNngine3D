@@ -42,30 +42,32 @@ void GameScene::Initialize() {
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
-	
-
-	// デバッグカメラの生成
-	debugCamera_ = new DebugCamera(1280,720);
 
 	//スカイドームの初期化
 	skydome_=new Skydome();
+	skydome_->Initialize(model_,&viewProjection_);
 	//3Dモデルの生成
 	modelSkydome_=Model::CreateFromOBJ("sphere",true);
 	skydome_->Initialize(modelSkydome_,&viewProjection_);
 
+	// デバッグカメラの生成
+	debugCamera_ = new DebugCamera(1280,720);
 
+	//マップチップフィールドの生成と初期化
 	mapChipField_=new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 
-	GeneratBlocks();
-	player_=new Player();
 	//自キャラの生成
-	Vector3 playerPosition=mapChipField_->GetMapChipPosisionByIndex(2,18);
+	player_=new Player();
+	// 座標をマップチップ番号で指定
+	Vector3 playerPosition=mapChipField_->GetMapChipPositionByIndex(2,18);
 	//自キャラの初期化
 	modelPlayer_=Model::CreateFromOBJ("player",true);
 	player_->Initialize(modelPlayer_,&viewProjection_,playerPosition);
 
-	
+	player_->SetMapChipField(mapChipField_);
+
+	GenerateBlocks();
 
 	//カメラコントローラーの初期化
 	cameraController = new CameraController;
@@ -75,6 +77,31 @@ void GameScene::Initialize() {
 
 	CameraController::Rect cameraArea = {14.0f, 100 - 12.0f, 7.6f, 7.6f};
 	cameraController->SetMovableArea(cameraArea);
+}
+void GameScene::GenerateBlocks() {
+
+	// 要素数
+	uint32_t numBlockVirtical = mapChipField_->GetNumBlockVirtical();
+	uint32_t numBlockHorizontal = mapChipField_->GetNumBlockHorizontal();
+	
+	// 要素数を変更する
+	worldTransformBlocks_.resize(numBlockVirtical);
+
+	// キューブの生成
+	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
+		worldTransformBlocks_[i].resize(numBlockHorizontal);
+	}
+
+	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
+		for (uint32_t j = 0; j < numBlockHorizontal; ++j) {
+			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock){
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformBlocks_[i][j] = worldTransform;
+				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
+			}
+		}
+	}
 }
 
 void GameScene::Update() {
@@ -101,22 +128,24 @@ void GameScene::Update() {
 		// ビュープロジェクション行列の更新と転送
 		viewProjection_.TransferMatrix();
 	}
+
 	//自キャラの更新
 	player_->Update();
 	//カメラの更新
 	cameraController->Update();
+	//スカイドームの更新
+	skydome_->Update();
 	// 縦横ブロック更新
 	for (std::vector<WorldTransform*>& worldTransformBlockTate : worldTransformBlocks_) {
 		for (WorldTransform*& worldTransformBlockYoko : worldTransformBlockTate) {
 			if (!worldTransformBlockYoko)
 				continue;
 
-			// アフィン変換行列の作成
-			worldTransformBlockYoko->UpdateMatrix();
+				// アフィン変換行列の作成
+				worldTransformBlockYoko->UpdateMatrix();
+		
 		}
 	}
-	//スカイドームの更新
-	skydome_->Update();
 }
 
 void GameScene::Draw() {
@@ -180,35 +209,3 @@ void GameScene::Draw() {
 }
 
 
-void GameScene::GeneratBlocks()
-{
-	//要素数
-	uint32_t numBlockVirtical=mapChipField_->GetNumBlockVirtical();
-	uint32_t numBlockHorizontal=mapChipField_->GetNumBlockHorizontal();
-	//// ブロック1個分の横幅
-	/*const float kBlockWidth = 2.0f;
-	const float kBlockHeight = 2.0f;*/
-	
-	// 要素数を変更する
-	//列数を設定(縦方向のブロック数)
-	worldTransformBlocks_.resize(numBlockVirtical);
-
-	// キューブの生成
-	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
-		worldTransformBlocks_[i].resize(numBlockHorizontal);
-	}
-
-	for (uint32_t i = 0; i < numBlockVirtical; ++i) {
-			for (uint32_t j = 0; j < numBlockHorizontal; ++j) {
-				if (mapChipField_->GetMapChipTypeByIndex(j,i)==MapChipType::kBlock) {
-					WorldTransform* worldTransform = new WorldTransform();
-					worldTransform->Initialize();
-					worldTransformBlocks_[i][j]= worldTransform;
-					worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPosisionByIndex(j,i);
-				} else {
-					worldTransformBlocks_[i][j] = nullptr;
-				}
-			}
-	}
-
-}

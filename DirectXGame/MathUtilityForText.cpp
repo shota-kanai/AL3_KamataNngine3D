@@ -48,15 +48,15 @@ const Vector3 operator/(const Vector3& v, float s) {
 
 
 //アフィン変換行列の作成
-Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rot, const Vector3& translate) {
+Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotation, const Vector3& translate) {
 	//エラー対策
 	Vector3 dm=scale;
 
 	//回転
 	Matrix4x4 RotateMatY = {
-		cosf(rot.y),0,-sinf(rot.y),0,
+		cosf(rotation.y),0,-sinf(rotation.y),0,
 		0,1,0,0,
-		sinf(rot.y),0,cosf(rot.y),0,
+		sinf(rotation.y),0,cosf(rotation.y),0,
 		0,0,0,1
 	};
 
