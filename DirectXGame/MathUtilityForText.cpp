@@ -96,7 +96,7 @@ Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotation, const 
 		translate.x,translate.y,translate.z,1
 	};
 	//回転*平行移動だけをワールド変換行列に
-	ansMat=MatrixMuliply(ScallMat,RotateMatY);
+	ansMat=MatrixMuliply(ScallMat,RotateMat);
 	ansMat=MatrixMuliply(ansMat,TranslateMat);
 
 	return ansMat;
