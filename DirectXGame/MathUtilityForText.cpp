@@ -51,24 +51,53 @@ const Vector3 operator/(const Vector3& v, float s) {
 Matrix4x4 MakeAffineMatrix(const Vector3& scale, const Vector3& rotation, const Vector3& translate) {
 	//エラー対策
 	Vector3 dm=scale;
+	Matrix4x4 ScallMat,
+              RotateMat,RotateMatX,RotateMatY,RotateMatZ,
+              TranslateMat,
+              ansMat;
 
-	//回転
-	Matrix4x4 RotateMatY = {
-		cosf(rotation.y),0,-sinf(rotation.y),0,
-		0,1,0,0,
-		sinf(rotation.y),0,cosf(rotation.y),0,
-		0,0,0,1
+    // スケール行列作成
+    ScallMat = {scale.x, 0, 0, 0,
+                0, scale.y, 0, 0,
+                0, 0, scale.z, 0,
+                0, 0, 0, 1
 	};
 
+    // XYZ回転行列作成
+    RotateMatX = {1, 0, 0, 0,
+                  0, cosf(rotation.x), sinf(rotation.x), 0,
+                  0,-sinf(rotation.x), cosf(rotation.x), 0,
+                  0, 0, 0, 1
+	};
+
+    RotateMatY = {cosf(rotation.y), 0,-sinf(rotation.y), 0,
+                  0, 1, 0, 0,
+                  sinf(rotation.y), 0, cosf(rotation.y), 0,
+                  0, 0, 0, 1
+	};
+
+    RotateMatZ = {cosf(rotation.z), sinf(rotation.z), 0, 0,
+                 -sinf(rotation.z), cosf(rotation.z), 0, 0,
+                  0, 0, 1, 0,
+                  0, 0, 0, 1
+	};
+
+    // XYZ回転行列の合成(Z*X*Y)
+    RotateMat = MatrixMuliply(RotateMatZ, RotateMatX);
+    // ↑の結果＊Y軸回転
+    RotateMat = MatrixMuliply(RotateMat, RotateMatY);
+
+
 	//平行移動行列の作成
-	Matrix4x4 TranslateMat = {
+	TranslateMat = {
 		1,0,0,0,
 		0,1,0,0,
 		0,0,1,0,
 		translate.x,translate.y,translate.z,1
 	};
 	//回転*平行移動だけをワールド変換行列に
-	Matrix4x4 ansMat=MatrixMuliply(RotateMatY,TranslateMat);
+	ansMat=MatrixMuliply(ScallMat,RotateMatY);
+	ansMat=MatrixMuliply(ansMat,TranslateMat);
 
 	return ansMat;
 }
@@ -108,15 +137,15 @@ float EaseInOut(float x1, float x2, float t)
 {
 	float easedT=-(std::cosf(std::numbers::pi_v<float>*t)-1.0f)/2.0f;
 
-return Lerp(x1,x2,easedT);
+	return Lerp(x1,x2,easedT);
 }
 
 float Lerp(float x1, float x2, float t)
 {
-return (1.0f-t)*x1+t*x2;
+	return (1.0f-t)*x1+t*x2;
 }
 
 Vector3 Lerp(const Vector3 & v1, const Vector3 & v2, float t)
 {
-return Vector3(Lerp(v1.x,v2.x,t),Lerp(v1.y,v2.y,t),Lerp(v1.z,v2.z,t));
+	return Vector3(Lerp(v1.x,v2.x,t),Lerp(v1.y,v2.y,t),Lerp(v1.z,v2.z,t));
 }

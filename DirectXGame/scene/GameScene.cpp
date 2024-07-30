@@ -82,10 +82,10 @@ void GameScene::Initialize() {
 	//敵の生成
 	enemy_ = new Enemy();
 	
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(5,18);
+	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14,18);
 	//敵の初期化
-	enemy_->Initialize(modelEnemy_, enemyPosition, &viewProjection_);
-
+	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+	
 }
 
 void GameScene::GenerateBlocks() {
@@ -223,5 +223,7 @@ void GameScene::Draw() {
 
 #pragma endregion
 }
+
+
 
 
