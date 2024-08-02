@@ -10,6 +10,9 @@ GameScene::~GameScene() {
 	delete model_;
 	delete player_;
 	delete modelPlayer_;
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
@@ -79,12 +82,20 @@ void GameScene::Initialize() {
 	CameraController::Rect cameraArea = {14.0f, 100 - 12.0f, 7.6f, 7.6f};
 	cameraController->SetMovableArea(cameraArea);
 
-	//敵の生成
+	for (int32_t i = 0; i < 3; ++i) {
+		//敵の生成
+		Enemy* newEnemy = new Enemy();
+		// 敵配置
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(8+i*5, 18);
+		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+		enemies_.push_back(newEnemy);
+	}
+	/*敵の生成
 	enemy_ = new Enemy();
 	
 	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14,18);
-	//敵の初期化
-	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
+	敵の初期化
+	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);*/
 	
 }
 
@@ -139,6 +150,8 @@ void GameScene::Update() {
 		viewProjection_.TransferMatrix();
 	}
 
+	CheckAllCollision();
+
 	//自キャラの更新
 	player_->Update();
 	//カメラの更新
@@ -146,7 +159,10 @@ void GameScene::Update() {
 	//スカイドームの更新
 	skydome_->Update();
 	//敵の更新
-	enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	};
+	//enemy_->Update();
 	// 縦横ブロック更新
 	for (std::vector<WorldTransform*>& worldTransformBlockTate : worldTransformBlocks_) {
 		for (WorldTransform*& worldTransformBlockYoko : worldTransformBlockTate) {
@@ -204,7 +220,10 @@ void GameScene::Draw() {
 	skydome_->Draw();
 
 	//敵の描画
-	enemy_->Draw();
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw();
+	};
+	//enemy_->Draw();
 
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
@@ -225,5 +244,21 @@ void GameScene::Draw() {
 }
 
 
+void GameScene::CheckAllCollision() {
+	
+	//判定対象1,2
+	AABB aabb1, aabb2;
+	//自キャラ座標
+	aabb1 = player_->GetAABB();
+	//自キャラとEnemyの判定
+	for (Enemy* enemy : enemies_) {
+		aabb2 = enemy->GetAABB();
+		if (IsCollision(aabb1, aabb2)) {
+		
+			player_->OnCollision(enemy);
+			enemy->OnCollision(player_);
 
+		}
+	}
+}
 

@@ -2,8 +2,10 @@
 #include"Model.h"
 #include "ViewProjection.h"
 #include"WorldTransform.h"
+#include"AABB.h"
 
 class MapChipField;
+class Enemy;
 
 class Player{
 public:
@@ -30,7 +32,12 @@ public:
 	//getter
 	const WorldTransform& GetWorldTransform()const {return worldTransform_;}
 	const Vector3& GetVelocity()const {return velocity_;}
+	// ワールド座標を取得
+	Vector3 GetWorldPosition();
+	// AABB
+	AABB GetAABB();
 
+	void OnCollision(const Enemy* enemy);
 	
 	/// <summary>
 	/// 更新

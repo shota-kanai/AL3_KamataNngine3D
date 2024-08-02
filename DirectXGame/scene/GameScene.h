@@ -48,12 +48,14 @@ public: // メンバ関数
 	/// <summary>
 	/// 描画
 	/// </summary>
-	void Draw();
-	void GenerateBlocks();
+	
 	/// <summary>
 	/// 表示ブロックの生成
 	/// </summary>
 	
+	void Draw();
+	void GenerateBlocks();
+	void CheckAllCollision();
 
 private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
@@ -94,4 +96,5 @@ private: // メンバ変数
 	CameraController*  cameraController=nullptr;
 	//敵
 	Enemy* enemy_ = nullptr;
+	std::list<Enemy*> enemies_;
 };
