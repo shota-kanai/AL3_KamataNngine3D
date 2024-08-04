@@ -13,6 +13,7 @@ GameScene::~GameScene() {
 	for (Enemy* enemy : enemies_) {
 		delete enemy;
 	}
+	delete deathParticles_;
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform*& worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
@@ -43,6 +44,7 @@ void GameScene::Initialize() {
 	modelPlayer_=Model::CreateFromOBJ("player",true);
 	modelEnemy_ = Model::CreateFromOBJ("enemy");
 	modelSkydome_=Model::CreateFromOBJ("sphere",true);
+	modelDeathParticle_ = Model::CreateFromOBJ("deathParticle", true);
 	// ワールドトランスフォームの初期化
 	worldTransform_.Initialize();
 	// ビュープロジェクションの初期化
@@ -86,17 +88,14 @@ void GameScene::Initialize() {
 		//敵の生成
 		Enemy* newEnemy = new Enemy();
 		// 敵配置
-		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(8+i*5, 18);
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(20+i*5, 18);
 		newEnemy->Initialize(modelEnemy_, &viewProjection_, enemyPosition);
 		enemies_.push_back(newEnemy);
 	}
-	/*敵の生成
-	enemy_ = new Enemy();
-	
-	Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(14,18);
-	敵の初期化
-	enemy_->Initialize(modelEnemy_, &viewProjection_, enemyPosition);*/
-	
+
+	// パーティクル
+	deathParticles_ = new DeathParticles;
+	deathParticles_->Initialize(modelDeathParticle_, &viewProjection_, playerPosition);
 }
 
 void GameScene::GenerateBlocks() {
@@ -158,6 +157,9 @@ void GameScene::Update() {
 	cameraController->Update();
 	//スカイドームの更新
 	skydome_->Update();
+	if (deathParticles_) {
+		deathParticles_->Update();
+	}
 	//敵の更新
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
@@ -218,6 +220,11 @@ void GameScene::Draw() {
 	}
 	//スカイドームの描画
 	skydome_->Draw();
+
+	//パーティクル
+	if (deathParticles_) {
+		deathParticles_->Draw();
+	}
 
 	//敵の描画
 	for (Enemy* enemy : enemies_) {

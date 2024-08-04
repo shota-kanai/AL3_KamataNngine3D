@@ -16,6 +16,7 @@
 #include"MapChipField.h"
 #include"CameraController.h"
 #include "Enemy.h"
+#include"DeathParticles.h"
 
 
 
@@ -72,6 +73,7 @@ private: // メンバ変数
 	Model* modelBlock_ = nullptr;
 	Model* modelPlayer_ =nullptr;
 	Model* modelEnemy_ = nullptr;
+	Model* modelDeathParticle_ = nullptr;
 	//ワールドトランスフォーム
 	WorldTransform worldTransform_;
 	//ビュープロジェクション
@@ -97,4 +99,7 @@ private: // メンバ変数
 	//敵
 	Enemy* enemy_ = nullptr;
 	std::list<Enemy*> enemies_;
+
+
+	DeathParticles* deathParticles_ = nullptr;
 };
