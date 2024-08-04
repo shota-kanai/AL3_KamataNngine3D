@@ -414,7 +414,7 @@ void Player::AnimateTurn() {
 
 //座標を取得
 Vector3 Player::GetWorldPosition() { 
-	Vector3 worldPos;
+	Vector3 worldPos{};
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
@@ -424,7 +424,7 @@ Vector3 Player::GetWorldPosition() {
 AABB  Player::GetAABB() { 
 
 	Vector3 worldPos = GetWorldPosition();
-	AABB aabb;
+	AABB aabb{};
 	
 	aabb.min = {worldPos.x - kWidth / 2.0f, worldPos.y - kWidth / 2.0f, worldPos.z - kWidth / 2.0f};
 	aabb.max = {worldPos.x + kHeight / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kHeight / 2.0f};
@@ -434,8 +434,8 @@ AABB  Player::GetAABB() {
 void Player::OnCollision(const Enemy* enemy) {
 
 	(void)enemy;
-	velocity_ = Vector3(0,2,0);
-
+	//velocity_ = Vector3(0,2,0);
+	isDead_ = true;
 }
 
 void Player::Draw() {
